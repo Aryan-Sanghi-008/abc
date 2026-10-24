@@ -9,7 +9,7 @@ export const copy = {
   invited: "You are Invited!",
   datesFirst: "November 20th",
   datesSecond: "and 21st, 2026",
-  countdown: "Counting Down to 21st November, 11 am",
+  countdown: "Countdown to 21st November, 11 am",
   days: "DAYS",
   hours: "HOURS",
   minutes: "MINUTES",
