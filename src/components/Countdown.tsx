@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { copy } from "@/lib/copy";
 import { Tx } from "./Tx";
 
-const WEDDING = new Date("2026-11-21T10:00:00+05:30").getTime();
+const WEDDING = new Date("2026-11-21T11:00:00+05:30").getTime();
 
 function parts(now: number) {
   const total = Math.floor(Math.max(0, WEDDING - now) / 1000);
@@ -37,11 +37,16 @@ export function Countdown() {
   ];
 
   return (
-    <div className="mx-auto grid max-w-85 grid-cols-4 gap-2">
+    <div className="mx-auto grid w-full max-w-85 grid-cols-4 gap-1.5 sm:gap-2">
       {cells.map((cell) => (
-        <div key={cell.label} className="rounded-2xl bg-[#f3dfe4] px-1 pb-2 pt-3">
-          <b className="block text-[28px] font-semibold text-[#a56a78]">{pad(cell.value)}</b>
-          <small className="font-sans text-[10px] tracking-[0.12em] text-[#b08992]">
+        <div
+          key={cell.label}
+          className="min-w-0 rounded-2xl bg-[#f3dfe4] px-1 pt-3 pb-2"
+        >
+          <b className="block text-[clamp(1.15rem,5.5cqi,1.75rem)] font-semibold text-[#a56a78]">
+            {pad(cell.value)}
+          </b>
+          <small className="font-sans text-[clamp(8px,1.8cqi,10px)] tracking-[0.08em] text-[#b08992]">
             <Tx item={cell.label} />
           </small>
         </div>

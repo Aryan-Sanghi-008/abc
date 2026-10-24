@@ -43,7 +43,14 @@ export function ScratchHeart() {
       ctx.save();
       heartPath(ctx, w, h);
       ctx.clip();
-      const grad = ctx.createRadialGradient(w * 0.48, h * 0.38, w * 0.04, w * 0.5, h * 0.46, w * 0.52);
+      const grad = ctx.createRadialGradient(
+        w * 0.48,
+        h * 0.38,
+        w * 0.04,
+        w * 0.5,
+        h * 0.46,
+        w * 0.52,
+      );
       grad.addColorStop(0, "#f3c3d0");
       grad.addColorStop(0.42, "#d56b84");
       grad.addColorStop(1, "#9a3352");
@@ -98,16 +105,15 @@ export function ScratchHeart() {
   }, [reveal, revealed]);
 
   return (
-    <div className="relative mx-auto mt-2 aspect-10/9 w-[min(280px,78%)]">
+    <div className="relative mx-auto mt-2 aspect-10/9 w-[min(340px,86%)]">
       <div className="heart-mask absolute inset-0 grid place-items-center bg-[#f7eef1]">
-        <p className="mt-2 text-[15px] leading-snug text-[#7c2433]">
+        <p className="mt-1 w-[62%] text-center text-[clamp(15px,3.6cqi,18px)] leading-snug text-[#7c2433]">
           <Tx item={copy.invited} />
-          <br />
-          <strong className="text-lg">November 21, 2026</strong>
-          <br />
-          <Tx item={copy.weekday} />
-          <br />
-          <Tx item={copy.time} />
+          <strong className="mt-1.5 block text-[clamp(17px,4.4cqi,22px)] leading-tight">
+            {copy.datesFirst}
+            <br />
+            {copy.datesSecond}
+          </strong>
         </p>
       </div>
       <canvas

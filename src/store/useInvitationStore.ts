@@ -5,12 +5,10 @@ type InvitationState = {
   opening: boolean;
   soundOn: boolean;
   revealed: boolean;
-  sent: boolean;
   beginOpen: () => void;
   finishOpen: () => void;
   toggleSound: () => void;
   reveal: () => void;
-  markSent: () => void;
 };
 
 export const useInvitationStore = create<InvitationState>((set, get) => ({
@@ -18,7 +16,6 @@ export const useInvitationStore = create<InvitationState>((set, get) => ({
   opening: false,
   soundOn: false,
   revealed: false,
-  sent: false,
   beginOpen: () => {
     if (get().opening || !get().sealed) return;
     set({ opening: true });
@@ -26,5 +23,4 @@ export const useInvitationStore = create<InvitationState>((set, get) => ({
   finishOpen: () => set({ sealed: false, opening: false }),
   toggleSound: () => set({ soundOn: !get().soundOn }),
   reveal: () => set({ revealed: true }),
-  markSent: () => set({ sent: true }),
 }));

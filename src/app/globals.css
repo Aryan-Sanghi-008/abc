@@ -2,26 +2,38 @@
 
 @theme inline {
   --font-serif: var(--font-cormorant), Georgia, serif;
+  --font-display: var(--font-playfair), Georgia, serif;
   --font-script: var(--font-vibes), cursive;
   --font-sans: var(--font-nunito), sans-serif;
 }
 
 @keyframes bob {
-  50% { transform: translateY(4px); }
+  50% {
+    transform: translateY(4px);
+  }
 }
 @keyframes drift {
-  to { transform: scale(1.06); }
+  to {
+    transform: scale(1.06);
+  }
 }
 @keyframes glow {
-  to { opacity: 1; transform: scale(1); }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 @keyframes fade-out {
-  to { opacity: 0; }
+  to {
+    opacity: 0;
+  }
 }
 
 .heart-mask {
-  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 90'><path d='M50 82C20 62 6 46 6 30 6 16 16 6 30 6c8 0 15 4 20 11C55 10 62 6 70 6c14 0 24 10 24 24 0 16-14 32-44 52z' fill='black'/></svg>") center / 100% 100% no-repeat;
-  mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 90'><path d='M50 82C20 62 6 46 6 30 6 16 16 6 30 6c8 0 15 4 20 11C55 10 62 6 70 6c14 0 24 10 24 24 0 16-14 32-44 52z' fill='black'/></svg>") center / 100% 100% no-repeat;
+  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 90'><path d='M50 82C20 62 6 46 6 30 6 16 16 6 30 6c8 0 15 4 20 11C55 10 62 6 70 6c14 0 24 10 24 24 0 16-14 32-44 52z' fill='black'/></svg>")
+    center / 100% 100% no-repeat;
+  mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 90'><path d='M50 82C20 62 6 46 6 30 6 16 16 6 30 6c8 0 15 4 20 11C55 10 62 6 70 6c14 0 24 10 24 24 0 16-14 32-44 52z' fill='black'/></svg>")
+    center / 100% 100% no-repeat;
 }
 
 .envelope-film {
@@ -35,7 +47,9 @@
   cursor: pointer;
   overflow: hidden;
 }
-.envelope-film:disabled { cursor: default; }
+.envelope-film:disabled {
+  cursor: default;
+}
 .envelope-film img {
   display: block;
   width: 100%;
@@ -49,5 +63,36 @@
   animation: envelope-away 0.4s ease forwards;
 }
 @keyframes envelope-away {
-  to { opacity: 0; }
+  to {
+    opacity: 0;
+  }
+}
+
+.invite-stage {
+  display: flex;
+  justify-content: center;
+  height: 100dvh;
+  overflow: hidden;
+  background: #243028;
+}
+.invite-card {
+  position: relative;
+  width: min(100%, 480px);
+  height: 100%;
+  overflow: hidden;
+  background: #f7eef1;
+  container-type: size;
+  container-name: card;
+}
+@media (min-width: 700px) and (min-height: 700px) {
+  .invite-stage {
+    align-items: center;
+    padding: 24px;
+  }
+  .invite-card {
+    width: min(560px, calc(100vw - 48px), calc((100dvh - 48px) * 0.56));
+    height: min(calc(100dvh - 48px), 1040px);
+    border-radius: 28px;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+  }
 }

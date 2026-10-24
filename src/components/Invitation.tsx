@@ -8,18 +8,43 @@ import { Envelope } from "./Envelope";
 import { ScratchHeart } from "./ScratchHeart";
 import { Tx } from "./Tx";
 
-const MAPS = "https://www.google.com/maps/search/?api=1&query=Udaipur+Rajasthan";
+const MAPS =
+  "https://www.google.com/maps/search/?api=1&query=The+Celestial+Garden+Pratap+Nagar+Udaipur";
+
+const program = [
+  {
+    title: "Turmeric Tales",
+    details: [{ label: "Haldi Ceremony", when: "Nov 20th, 2026, 10:30 AM" }],
+  },
+  {
+    title: "The Ring Affair with a Groove",
+    details: [
+      { label: "Sagai", when: "Nov 20th, 2026, 4:00 PM" },
+      { label: "Sangeet", when: "Nov 20th, 2026, 7:00 PM" },
+    ],
+  },
+  {
+    title: "Dhol & Dhoom",
+    details: [{ label: "Bharat procession", when: "Nov 21st, 2026, 9:30 AM" }],
+  },
+  {
+    title: "Once upon a Vow",
+    details: [{ label: "Varmala & Pheras", when: "Nov 21st, 2026, 11:00 AM" }],
+  },
+  {
+    title: "The Reception Dinner",
+    details: [{ when: "Nov 21st, 2026, 7:00 PM" }],
+  },
+];
 
 export function Invitation() {
   const scrollerRef = useRef<HTMLDivElement>(null);
   const sealed = useInvitationStore((state) => state.sealed);
   const opening = useInvitationStore((state) => state.opening);
   const soundOn = useInvitationStore((state) => state.soundOn);
-  const sent = useInvitationStore((state) => state.sent);
   const beginOpen = useInvitationStore((state) => state.beginOpen);
   const finishOpen = useInvitationStore((state) => state.finishOpen);
   const toggleSound = useInvitationStore((state) => state.toggleSound);
-  const markSent = useInvitationStore((state) => state.markSent);
 
   useEffect(() => {
     if (!soundOn) return;
@@ -48,50 +73,70 @@ export function Invitation() {
   }, [soundOn]);
 
   return (
-    <div className="flex min-h-dvh justify-center bg-[#243028] md:py-6">
-      <div className="relative h-dvh w-full max-w-107.5 overflow-hidden bg-[#f7eef1] shadow-[0_24px_80px_rgba(0,0,0,.35)] md:h-[min(920px,calc(100dvh-48px))] md:rounded-[28px]">
-        <div ref={scrollerRef} className={`h-full ${sealed ? "overflow-hidden" : "overflow-auto"}`}>
-          <header className="relative flex min-h-dvh items-center justify-center text-center text-[#f7f1ea] md:min-h-[min(920px,calc(100dvh-48px))]">
-            <img src="/images/hero-palace.png" alt="" className="absolute inset-0 h-full w-full object-cover" />
+    <div className="invite-stage">
+      <div className="invite-card">
+        <div
+          ref={scrollerRef}
+          className={`h-full ${sealed ? "overflow-hidden" : "overflow-auto"}`}
+        >
+          <header className="relative flex h-full flex-col text-center text-[#f7f1ea]">
+            <img
+              src="/images/hero-palace.png"
+              alt=""
+              className="absolute inset-0 h-full w-full object-cover"
+            />
             <div className="absolute inset-0 bg-linear-to-b from-black/25 via-black/15 to-[#141018]/70" />
-            <div className="relative z-1 px-7 pb-[12vh] pt-[18vh] [text-shadow:0_2px_16px_rgba(0,0,0,.35)]">
-              <p className="mx-auto max-w-70 text-[28px] leading-snug">
+            <div className="relative z-1 flex min-h-0 flex-1 flex-col items-center justify-center px-5 pt-[clamp(2.6rem,6cqh,4rem)] pb-1 [text-shadow:0_2px_16px_rgba(0,0,0,.45)]">
+              <p className="mx-auto max-w-[min(16rem,92%)] text-[clamp(1.05rem,3.2cqh,1.8rem)] leading-snug">
                 <Tx item={copy.welcome} script />
               </p>
               <Rule light />
-              <h1 className="font-script text-[78px] font-normal leading-none">Ishan</h1>
-              <p className="mt-1.5 text-base leading-snug tracking-wide">
-                <Tx item={copy.degree} />
+              <h1 className="max-w-full font-display text-[clamp(1.85rem,7cqh,4.15rem)] font-medium italic leading-none">
+                Noopur
+              </h1>
+              <p className="mx-auto mt-1 max-w-[24ch] text-[clamp(0.72rem,1.8cqh,1rem)] leading-snug tracking-wide">
+                <Tx item={copy.noopurParents} />
               </p>
-              <p className="my-1.5 font-script text-4xl">&amp;</p>
-              <h1 className="font-script text-[78px] font-normal leading-none">Noopur</h1>
-              <p className="mt-1.5 text-base leading-snug tracking-wide">
-                <Tx item={copy.degree} />
+              <p className="my-0.5 font-display text-[clamp(1.15rem,3cqh,2.25rem)] italic leading-none">
+                &amp;
+              </p>
+              <h1 className="max-w-full font-display text-[clamp(1.85rem,7cqh,4.15rem)] font-medium italic leading-none">
+                Ishan
+              </h1>
+              <p className="mx-auto mt-1 max-w-[22ch] text-[clamp(0.72rem,1.8cqh,1rem)] leading-snug tracking-wide">
+                <Tx item={copy.ishanParents} />
               </p>
             </div>
             <button
               type="button"
-              className="absolute bottom-7 left-1/2 z-1 flex -translate-x-1/2 flex-col items-center gap-0.5 border-0 bg-transparent text-xs tracking-[0.28em] text-[#efe6dc]"
-              onClick={() => scrollerRef.current?.scrollTo({ top: window.innerHeight * 0.82, behavior: "smooth" })}
+              className="relative z-1 mb-3 flex shrink-0 flex-col items-center gap-0.5 border-0 bg-transparent text-xs tracking-[0.28em] text-[#efe6dc] [text-shadow:0_2px_10px_rgba(0,0,0,.45)]"
+              onClick={() => {
+                const scroller = scrollerRef.current;
+                scroller?.scrollTo({
+                  top: scroller.clientHeight * 0.92,
+                  behavior: "smooth",
+                });
+              }}
             >
               <Tx item={copy.scroll} />
-              <svg viewBox="0 0 24 24" className="h-5.5 w-5.5 animate-[bob_1.4s_ease-in-out_infinite]" aria-hidden="true">
-                <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" strokeWidth="1.6" />
+              <svg
+                viewBox="0 0 24 24"
+                className="h-5.5 w-5.5 animate-[bob_1.4s_ease-in-out_infinite]"
+                aria-hidden="true"
+              >
+                <path
+                  d="M6 9l6 6 6-6"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                />
               </svg>
             </button>
-            <div className="absolute bottom-22 right-4 z-1 flex h-16 w-16 flex-col items-center justify-center rounded-full border border-[#d4af70]/80 bg-black/25 font-script text-[22px] leading-none text-[#e7d2a4]">
-              <span>I</span>
-              <span className="text-[11px]">&amp;</span>
-              <span>N</span>
-            </div>
           </header>
 
-          <section className="relative mt-[-18vh] bg-linear-to-b from-transparent from-0% via-[#1a1520] via-22% to-[#f6eef2] to-78% px-8 pb-7 pt-[22vh] text-center text-[#f4ece6]">
-            <p className="mx-auto max-w-[320px] text-lg leading-relaxed">
+          <section className="bg-[#f6eef2] px-6 py-8 text-center text-[#4a3140] sm:px-8">
+            <p className="mx-auto max-w-[34ch] text-[clamp(1.05rem,2.4cqh,1.25rem)] leading-relaxed">
               <Tx item={copy.blessing} />
-            </p>
-            <p className="mt-6 text-[#8d3d4e]">
-              <Tx item={copy.blessed} script className="text-[26px]" />
             </p>
           </section>
 
@@ -104,7 +149,11 @@ export function Invitation() {
           <Panel alt>
             <Rule />
             <figure className="mx-auto mb-4 w-full max-w-85 overflow-hidden rounded-lg bg-[#ddd] shadow-[0_10px_30px_rgba(90,40,50,.12)]">
-              <img src="/images/bouquet.png" alt="Bridal bouquet under a garden arch" className="block h-47.5 w-full animate-[drift_14s_ease-in-out_infinite_alternate] object-cover" />
+              <img
+                src="/images/bouquet.png"
+                alt="Bridal bouquet under a garden arch"
+                className="block h-[clamp(140px,24cqh,220px)] w-full animate-[drift_14s_ease-in-out_infinite_alternate] object-cover"
+              />
               <div className="relative h-1 bg-[#efe4e6]">
                 <i className="absolute inset-y-0 left-0 w-[42%] bg-[#c23b45] before:absolute before:-right-1.25 before:-top-1 before:h-2.5 before:w-2.5 before:rounded-full before:bg-[#c23b45]" />
               </div>
@@ -116,11 +165,19 @@ export function Invitation() {
 
           <Panel>
             <Icon name="clock" />
-            <Heading item={copy.timeline} />
-            <ol className="mx-auto mt-2 max-w-[320px] list-none p-0 text-left">
-              <Event title={copy.arrival} when="Nov 21, 2026, 10:00 AM" note={copy.welcomeYou} />
-              <Event title={copy.ceremony} when="Nov 21, 2026, 10:30 AM" note={copy.presence} />
-              <Event title={copy.reception} when="Nov 24, 2026, 7:30 PM" note={copy.receptionNote} last />
+            <p className="mx-auto max-w-[22ch] text-[clamp(1.35rem,4.6cqi,1.7rem)] leading-snug text-[#8d3d4e]">
+              <Tx item={copy.presence} />
+            </p>
+            <Rule />
+            <ol className="mx-auto mt-2 w-full max-w-85 list-none p-0 text-left">
+              {program.map((item, index) => (
+                <Event
+                  key={item.title}
+                  title={item.title}
+                  details={item.details}
+                  last={index === program.length - 1}
+                />
+              ))}
             </ol>
           </Panel>
 
@@ -128,104 +185,44 @@ export function Invitation() {
             <Icon name="pin" />
             <Heading item={copy.venue} />
             <Rule />
-            <h3 className="mb-1 text-[26px] font-semibold text-[#7c2433]">Udaipur</h3>
-            <p className="mb-2 text-[17px] leading-snug text-[#5c4450]">Rajasthan</p>
+            <h3 className="mb-1 text-[clamp(1.35rem,5cqi,1.7rem)] font-semibold text-[#7c2433]">
+              <Tx item={copy.venueName} />
+            </h3>
+            <p className="mb-2 text-[clamp(1rem,3.4cqi,1.1rem)] leading-snug text-[#5c4450]">
+              <Tx item={copy.venuePlace} />
+            </p>
             <Palace />
-            <a href={MAPS} target="_blank" rel="noopener noreferrer" className="mx-auto mt-3 block w-full max-w-70 rounded-lg bg-[#8d2c3c] px-4 py-3 font-sans text-[15px] text-white no-underline hover:bg-[#742433]">
+            <a
+              href={MAPS}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mx-auto mt-3 block w-full max-w-70 rounded-lg bg-[#8d2c3c] px-4 py-3 font-sans text-[15px] text-white no-underline hover:bg-[#742433]"
+            >
               <Tx item={copy.maps} />
             </a>
           </Panel>
 
-          <Panel>
-            <Icon name="shirt" />
-            <Heading item={copy.dress} />
-            <Rule />
-            <h3 className="mt-4 text-[22px] font-semibold text-[#7c2433]"><Tx item={copy.women} /></h3>
-            <p className="text-[17px] text-[#5c4450]"><Tx item={copy.womenNote} /></p>
-            <h3 className="mt-4 text-[22px] font-semibold text-[#7c2433]"><Tx item={copy.men} /></h3>
-            <p className="text-[17px] text-[#5c4450]"><Tx item={copy.menNote} /></p>
-          </Panel>
-
-          <Panel alt>
-            <Icon name="spark" />
-            <Heading item={copy.prewedding} />
-            <Rule />
-            <EventBlock title="Mahendi" when="Nov 19, 2026, 9:30 PM" note={copy.bride} />
-            <EventBlock title="Haldi" when="Nov 20, 2026, 8:30 PM" note={copy.groom} />
-            <EventBlock title="Sangeet" when="Nov 20, 2026, 9:00 PM" note={copy.palace} />
-          </Panel>
-
-          <Panel>
-            <Icon name="car" />
-            <Heading item={copy.transport} />
-            <Rule />
-            <p className="text-[17px] leading-snug text-[#5c4450]"><Tx item={copy.shuttle} /></p>
-          </Panel>
-
-          <Panel alt>
-            <Icon name="hotel" />
-            <Heading item={copy.stay} />
-            <Rule />
-            <p className="text-[17px] leading-snug text-[#5c4450]"><Tx item={copy.rates} /></p>
-          </Panel>
-
-          <Panel>
-            <Icon name="gift" />
-            <Heading item={copy.gifts} />
-            <Rule />
-            <p className="text-[17px] leading-snug text-[#5c4450]"><Tx item={copy.giftNote} /></p>
-          </Panel>
-
-          <Panel alt>
-            <Icon name="mail" />
-            <Heading item={copy.message} />
-            <Rule />
-            <form
-              className="mx-auto max-w-[320px] text-left"
-              onSubmit={(event) => {
-                event.preventDefault();
-                markSent();
-                event.currentTarget.reset();
-              }}
-            >
-              <Field label={copy.name} placeholder={copy.namePh} name="name" required />
-              <Field label={copy.email} placeholder="you@example.com" name="email" type="email" required />
-              <label className="mb-3 block text-base text-[#7c2433]">
-                <Tx item={copy.attending} />
-                <select name="attending" required className="mt-1 w-full border-0 border-b border-[#e0cfd4] bg-transparent px-0.5 py-2 outline-none focus:border-[#7c2433]">
-                  <option value="">{copy.select}</option>
-                  <option value="yes">{copy.yes}</option>
-                  <option value="no">{copy.no}</option>
-                </select>
-              </label>
-              <Field label={copy.yourMessage} placeholder={copy.wishes} name="message" multiline />
-              <button type="submit" className="mx-auto mt-3 block w-full max-w-70 rounded-lg border-0 bg-[#8d2c3c] px-4 py-3 font-sans text-[15px] text-white hover:bg-[#742433]">
-                <Tx item={copy.send} />
-              </button>
-              {sent ? <p className="mt-3 text-center text-[#7c2433]"><Tx item={copy.thanks} /></p> : null}
-            </form>
-          </Panel>
-
-          <footer className="bg-[#f7eef1] px-6 pb-24 pt-2.5 text-center">
-            <Wave />
-            <p><Tx item={copy.celebrate} script className="text-4xl text-[#8d3d4e]" /></p>
-            <p className="mt-2 font-script text-[32px] text-[#7c2433]">Ishan &amp; Noopur</p>
-            <Wave flip />
-            <p className="font-sans text-[13px] leading-normal text-[#9a7c84]">
-              <strong className="block font-script text-[22px] font-normal text-[#8d3d4e]">Ishan &amp; Noopur</strong>
-              <Tx item={copy.brand} />
+          <footer className="bg-[#f7eef1] px-6 pt-2 pb-12 text-center sm:px-8">
+            <p className="mx-auto max-w-[16ch] text-[clamp(1.7rem,6.5cqi,2.15rem)] leading-tight text-[#8d3d4e]">
+              <Tx item={copy.closing} script />
             </p>
           </footer>
         </div>
 
-        {sealed ? <Envelope opening={opening} onOpen={beginOpen} onFinished={finishOpen} /> : null}
+        {sealed ? (
+          <Envelope
+            opening={opening}
+            onOpen={beginOpen}
+            onFinished={finishOpen}
+          />
+        ) : null}
 
         <button
           type="button"
           aria-pressed={soundOn}
           aria-label={soundOn ? "Mute" : "Unmute"}
           onClick={toggleSound}
-          className="absolute right-2.5 top-2.5 z-8 grid h-11 w-11 place-items-center rounded-xl border-0 bg-white text-[#6d3040] shadow-[0_4px_16px_rgba(80,40,50,.12)]"
+          className="absolute top-[max(0.75rem,env(safe-area-inset-top))] right-3 z-8 grid h-12 w-12 place-items-center rounded-2xl border-0 bg-[#f7eef1] text-[#6d3040] shadow-[0_4px_16px_rgba(80,40,50,.12)] sm:h-14 sm:w-14"
         >
           {soundOn ? <Speaker /> : <Muted />}
         </button>
@@ -236,14 +233,26 @@ export function Invitation() {
 
 function Heading({ item }: { item: string }) {
   return (
-    <h2 className="mx-auto max-w-[18ch] text-[clamp(32px,8.4vw,40px)] leading-tight text-[#8d3d4e]">
+    <h2 className="mx-auto max-w-full px-2 text-[clamp(1.65rem,6.5cqi,2.35rem)] leading-[1.15] text-[#8d3d4e]">
       <Tx item={item} script />
     </h2>
   );
 }
 
-function Panel({ children, alt = false }: { children: React.ReactNode; alt?: boolean }) {
-  return <section className={`${alt ? "bg-[#f3e6ea]" : "bg-[#f7eef1]"} px-7 py-8 text-center`}>{children}</section>;
+function Panel({
+  children,
+  alt = false,
+}: {
+  children: React.ReactNode;
+  alt?: boolean;
+}) {
+  return (
+    <section
+      className={`${alt ? "bg-[#f3e6ea]" : "bg-[#f7eef1]"} px-5 py-8 text-center sm:px-7`}
+    >
+      {children}
+    </section>
+  );
 }
 
 function Rule({ light = false }: { light?: boolean }) {
@@ -259,81 +268,70 @@ function Rule({ light = false }: { light?: boolean }) {
 
 function Event({
   title,
-  when,
-  note,
+  details,
   last = false,
 }: {
   title: string;
-  when: string;
-  note: string;
+  details: { label?: string; when: string }[];
   last?: boolean;
 }) {
   return (
-    <li className={`relative pb-5 pl-5.5 ${last ? "border-l border-transparent pb-0" : "border-l border-[#e3c5cb]"} before:absolute before:-left-1.25 before:top-1.5 before:h-2.25 before:w-2.25 before:rounded-full before:bg-[#a33b4c]`}>
-      <h3 className="m-0 text-xl font-semibold text-[#7c2433]"><Tx item={title} /></h3>
-      <time className="block text-[15px] text-[#7d6570]">{when}</time>
-      <p className="mt-1 text-[17px] text-[#5c4450]"><Tx item={note} /></p>
+    <li
+      className={`relative pb-5 pl-5.5 ${last ? "border-l border-transparent pb-0" : "border-l border-[#e3c5cb]"} before:absolute before:-left-1.25 before:top-1.5 before:h-2.25 before:w-2.25 before:rounded-full before:bg-[#a33b4c]`}
+    >
+      <h3 className="m-0 text-[clamp(1.25rem,4.8cqi,1.6rem)] leading-snug font-semibold text-[#7c2433]">
+        {title}
+      </h3>
+      {details.map((detail) => (
+        <div key={`${detail.label ?? "when"}-${detail.when}`} className="mt-1">
+          {detail.label ? (
+            <p className="text-[clamp(1.08rem,3.8cqi,1.28rem)] text-[#5c4450]">
+              {detail.label}
+            </p>
+          ) : null}
+          <time className="block text-[clamp(1rem,3.5cqi,1.18rem)] text-[#7d6570]">
+            {detail.when}
+          </time>
+        </div>
+      ))}
     </li>
   );
 }
 
-function EventBlock({ title, when, note }: { title: string; when: string; note: string }) {
-  return (
-    <article className="mb-4">
-      <h3 className="mb-0 text-[22px] font-semibold text-[#7c2433]">{title}</h3>
-      <time className="block text-[15px] text-[#7d6570]">{when}</time>
-      <p className="mt-0.5 text-[17px] text-[#5c4450]"><Tx item={note} /></p>
-    </article>
-  );
-}
-
-function Field({
-  label,
-  placeholder,
-  name,
-  type = "text",
-  required = false,
-  multiline = false,
-}: {
-  label: string;
-  placeholder: string;
-  name: string;
-  type?: string;
-  required?: boolean;
-  multiline?: boolean;
-}) {
-  const field = "mt-1 w-full border-0 border-b border-[#e0cfd4] bg-transparent px-0.5 py-2 outline-none focus:border-[#7c2433]";
-  return (
-    <label className="mb-3 block text-base text-[#7c2433]">
-      <Tx item={label} />
-      {multiline ? (
-        <textarea name={name} rows={3} placeholder={placeholder} className={field} />
-      ) : (
-        <input name={name} type={type} required={required} placeholder={placeholder} className={field} />
-      )}
-    </label>
-  );
-}
-
-function Icon({ name }: { name: "clock" | "pin" | "shirt" | "spark" | "car" | "hotel" | "gift" | "mail" }) {
+function Icon({ name }: { name: "clock" | "pin" }) {
   const common = { fill: "none", stroke: "#8d3d4e", strokeWidth: 1.6 };
   return (
-    <svg viewBox="0 0 24 24" className="mx-auto mb-1.5 h-7 w-7" aria-hidden="true">
-      {name === "clock" && (<><circle cx="12" cy="12" r="8" {...common} /><path d="M12 8v5l3 2" {...common} /></>)}
-      {name === "pin" && (<><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z" {...common} /><circle cx="12" cy="10" r="2.2" {...common} /></>)}
-      {name === "shirt" && <path d="M8 6l4 2 4-2 4 3-2 3v10H6V12L4 9z" {...common} />}
-      {name === "spark" && <path d="M12 3l1.5 5.5L19 10l-5.5 1.5L12 17l-1.5-5.5L5 10l5.5-1.5z" {...common} />}
-      {name === "car" && (<><path d="M4 14l2-5h12l2 5M5 14h14v4H5z" {...common} /><circle cx="7.5" cy="18" r="1.3" {...common} /><circle cx="16.5" cy="18" r="1.3" {...common} /></>)}
-      {name === "hotel" && <path d="M4 20V8h7v12M11 20V4h9v16M7 11h2M7 14h2M14 8h2M14 11h2M14 14h2" {...common} />}
-      {name === "gift" && (<><rect x="4" y="10" width="16" height="10" rx="1" {...common} /><path d="M4 10h16M12 10v10M12 10c-2 0-4-1.2-4-3s2-2 4 3c2-5 4-3 4-3s0 3-4 3z" {...common} /></>)}
-      {name === "mail" && (<><rect x="3" y="6" width="18" height="12" rx="1.5" {...common} /><path d="M4 7l8 7 8-7" {...common} /></>)}
+    <svg
+      viewBox="0 0 24 24"
+      className="mx-auto mb-1.5 h-7 w-7"
+      aria-hidden="true"
+    >
+      {name === "clock" && (
+        <>
+          <circle cx="12" cy="12" r="8" {...common} />
+          <path d="M12 8v5l3 2" {...common} />
+        </>
+      )}
+      {name === "pin" && (
+        <>
+          <path
+            d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"
+            {...common}
+          />
+          <circle cx="12" cy="10" r="2.2" {...common} />
+        </>
+      )}
     </svg>
   );
 }
 
 function Palace() {
   return (
-    <svg viewBox="0 0 360 90" className="mx-auto my-1 h-21 w-full max-w-[320px]" aria-hidden="true">
+    <svg
+      viewBox="0 0 360 90"
+      className="mx-auto my-1 h-21 w-full max-w-[320px]"
+      aria-hidden="true"
+    >
       <g fill="none" stroke="#c9a3a8" strokeWidth="1.4">
         <path d="M20 78h320" />
         <path d="M40 78V58h24v20M70 78V50h18v28M94 78V58h24v20" />
@@ -348,20 +346,16 @@ function Palace() {
   );
 }
 
-function Wave({ flip = false }: { flip?: boolean }) {
-  return (
-    <div
-      className={`mx-auto my-2.5 h-7 w-70 bg-[url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 320 28%22 fill=%22none%22 stroke=%22%23d7aeb6%22 stroke-width=%221%22><path d=%22M0 18c30-16 50 8 80 0s50-16 80 0 50 16 80 0 50-16 80 0%22/></svg>')] bg-contain bg-center bg-no-repeat ${flip ? "-scale-y-100" : ""}`}
-      aria-hidden="true"
-    />
-  );
-}
-
 function Speaker() {
   return (
     <svg viewBox="0 0 24 24" className="h-5.5 w-5.5" aria-hidden="true">
       <path d="M4 10h3l4-3v10l-4-3H4z" fill="currentColor" />
-      <path d="M15 9.5a3.5 3.5 0 0 1 0 5M17 7.5a6 6 0 0 1 0 9" fill="none" stroke="currentColor" strokeWidth="1.6" />
+      <path
+        d="M15 9.5a3.5 3.5 0 0 1 0 5M17 7.5a6 6 0 0 1 0 9"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.6"
+      />
     </svg>
   );
 }
@@ -370,7 +364,12 @@ function Muted() {
   return (
     <svg viewBox="0 0 24 24" className="h-5.5 w-5.5" aria-hidden="true">
       <path d="M4 10h3l4-3v10l-4-3H4z" fill="currentColor" />
-      <path d="M16 9l5 6M21 9l-5 6" fill="none" stroke="currentColor" strokeWidth="1.6" />
+      <path
+        d="M16 9l5 6M21 9l-5 6"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.6"
+      />
     </svg>
   );
 }

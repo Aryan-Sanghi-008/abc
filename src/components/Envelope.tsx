@@ -56,7 +56,12 @@ export function Envelope({
       disabled={opening}
       aria-label="Tap to open"
     >
-      <img src={src} alt="" className={frame > 56 ? "is-dissolving" : ""} draggable={false} />
+      <img
+        src={src}
+        alt=""
+        className={frame > 56 ? "is-dissolving" : ""}
+        draggable={false}
+      />
     </button>
   );
 }
