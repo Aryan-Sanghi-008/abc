@@ -80,11 +80,19 @@ export function Invitation() {
           className={`h-full ${sealed ? "overflow-hidden" : "overflow-auto"}`}
         >
           <header className="relative flex h-full flex-col text-center text-[#f7f1ea]">
-            <img
-              src="/images/hero-palace.png"
-              alt=""
-              className="absolute inset-0 h-full w-full object-cover"
-            />
+            <picture className="absolute inset-0 block h-full w-full">
+              <source media="(min-width: 1100px)" srcSet="/images/hero-desktop.png" />
+              <source
+                media="(min-width: 700px) and (orientation: landscape)"
+                srcSet="/images/hero-desktop.png"
+              />
+              <source media="(min-width: 700px)" srcSet="/images/hero-tablet.png" />
+              <img
+                src="/images/hero-phone.png"
+                alt=""
+                className="h-full w-full object-cover object-center"
+              />
+            </picture>
             <div className="absolute inset-0 bg-linear-to-b from-black/25 via-black/15 to-[#141018]/70" />
             <div className="relative z-1 flex min-h-0 flex-1 flex-col items-center justify-center px-5 pt-[clamp(2.6rem,6cqh,4rem)] pb-1 [text-shadow:0_2px_16px_rgba(0,0,0,.45)]">
               <p className="mx-auto max-w-[min(16rem,92%)] text-[clamp(1.05rem,3.2cqh,1.8rem)] leading-snug">
