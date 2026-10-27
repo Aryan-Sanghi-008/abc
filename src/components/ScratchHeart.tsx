@@ -28,8 +28,12 @@ export function ScratchHeart() {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas || revealed) return;
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
     if (!ctx) return;
+
+    let isDrawing = false;
+    let lastX = 0;
+    let lastY = 0;
 
     const paint = () => {
       const rect = canvas.getBoundingClientRect();
@@ -69,47 +73,91 @@ export function ScratchHeart() {
       solidAtStart.current = Math.max(1, countSolid(ctx, canvas));
     };
 
-    const scratchAt = (x: number, y: number) => {
+    const scratchAt = (clientX: number, clientY: number) => {
       const rect = canvas.getBoundingClientRect();
+      const cx = clientX - rect.left;
+      const cy = clientY - rect.top;
       ctx.save();
       ctx.globalCompositeOperation = "destination-out";
       ctx.beginPath();
-      ctx.arc(x - rect.left, y - rect.top, 18, 0, Math.PI * 2);
+      ctx.arc(cx, cy, 24, 0, Math.PI * 2);
       ctx.fill();
       ctx.restore();
     };
 
+    const scratchLine = (x1: number, y1: number, x2: number, y2: number) => {
+      ctx.save();
+      ctx.globalCompositeOperation = "destination-out";
+      ctx.lineWidth = 44;
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+      ctx.restore();
+    };
+
     const onDown = (event: PointerEvent) => {
-      canvas.setPointerCapture(event.pointerId);
+      isDrawing = true;
+      try {
+        canvas.setPointerCapture(event.pointerId);
+      } catch {}
+      const rect = canvas.getBoundingClientRect();
+      lastX = event.clientX - rect.left;
+      lastY = event.clientY - rect.top;
       scratchAt(event.clientX, event.clientY);
     };
+
     const onMove = (event: PointerEvent) => {
-      if (event.buttons !== 1) return;
-      scratchAt(event.clientX, event.clientY);
+      if (!isDrawing && event.buttons !== 1) return;
+      const rect = canvas.getBoundingClientRect();
+      const currentX = event.clientX - rect.left;
+      const currentY = event.clientY - rect.top;
+      scratchLine(lastX, lastY, currentX, currentY);
+      lastX = currentX;
+      lastY = currentY;
+
+      const solid = countSolid(ctx, canvas);
+      if (solid / solidAtStart.current < 0.68) {
+        reveal();
+      }
     };
-    const onUp = () => {
-      if (countSolid(ctx, canvas) / solidAtStart.current < 0.46) reveal();
+
+    const onUp = (event: PointerEvent) => {
+      if (!isDrawing) return;
+      isDrawing = false;
+      try {
+        canvas.releasePointerCapture(event.pointerId);
+      } catch {}
+      const solid = countSolid(ctx, canvas);
+      if (solid / solidAtStart.current < 0.72) {
+        reveal();
+      }
     };
 
     paint();
     canvas.addEventListener("pointerdown", onDown);
     canvas.addEventListener("pointermove", onMove);
     canvas.addEventListener("pointerup", onUp);
+    canvas.addEventListener("pointercancel", onUp);
     window.addEventListener("resize", paint);
+
     return () => {
       canvas.removeEventListener("pointerdown", onDown);
       canvas.removeEventListener("pointermove", onMove);
       canvas.removeEventListener("pointerup", onUp);
+      canvas.removeEventListener("pointercancel", onUp);
       window.removeEventListener("resize", paint);
     };
   }, [reveal, revealed]);
 
   return (
     <div className="relative mx-auto mt-2 aspect-10/9 w-[min(340px,86%)]">
-      <div className="heart-mask absolute inset-0 grid place-items-center bg-[#f7eef1]">
-        <p className="mt-1 w-[62%] text-center text-[clamp(15px,3.6cqi,18px)] leading-snug text-[#7c2433]">
+      <div className="absolute inset-0 flex flex-col items-center justify-center select-none">
+        <p className="-mt-2 w-[72%] text-center text-[clamp(15px,3.8cqi,18px)] leading-snug text-[#7c2433]">
           <Tx item={copy.invited} />
-          <strong className="mt-1.5 block text-[clamp(17px,4.4cqi,22px)] leading-tight">
+          <strong className="mt-1.5 block text-[clamp(17px,4.6cqi,22px)] font-bold leading-tight text-[#7c2433]">
             {copy.datesFirst}
             <br />
             {copy.datesSecond}
@@ -119,7 +167,11 @@ export function ScratchHeart() {
       <canvas
         ref={canvasRef}
         aria-label="Scratch the heart"
-        className={`absolute inset-0 h-full w-full touch-none ${revealed ? "pointer-events-none opacity-0 transition-opacity duration-700" : "cursor-crosshair"}`}
+        className={`absolute inset-0 h-full w-full touch-none ${
+          revealed
+            ? "pointer-events-none opacity-0 transition-opacity duration-700"
+            : "cursor-crosshair"
+        }`}
       />
     </div>
   );

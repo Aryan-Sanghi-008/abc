@@ -3,13 +3,14 @@
 import { useEffect, useRef } from "react";
 import { copy } from "@/lib/copy";
 import { useInvitationStore } from "@/store/useInvitationStore";
+import { AddToCalendar } from "./AddToCalendar";
 import { Countdown } from "./Countdown";
-import { Envelope } from "./Envelope";
+import { PushpaVrishti } from "./PushpaVrishti";
 import { ScratchHeart } from "./ScratchHeart";
 import { Tx } from "./Tx";
 
 const MAPS =
-  "https://www.google.com/maps/search/?api=1&query=The+Celestial+Garden+Pratap+Nagar+Udaipur";
+  "https://www.google.com/maps/search/?api=1&query=SKK+Blu+Hotel+Udaipur";
 
 const program = [
   {
@@ -25,7 +26,7 @@ const program = [
   },
   {
     title: "Dhol & Dhoom",
-    details: [{ label: "Bharat procession", when: "Nov 21st, 2026, 9:30 AM" }],
+    details: [{ label: "Baraat procession", when: "Nov 21st, 2026, 9:30 AM" }],
   },
   {
     title: "Once upon a Vow",
@@ -39,35 +40,72 @@ const program = [
 
 export function Invitation() {
   const scrollerRef = useRef<HTMLDivElement>(null);
-  const sealed = useInvitationStore((state) => state.sealed);
-  const opening = useInvitationStore((state) => state.opening);
   const soundOn = useInvitationStore((state) => state.soundOn);
-  const beginOpen = useInvitationStore((state) => state.beginOpen);
-  const finishOpen = useInvitationStore((state) => state.finishOpen);
   const toggleSound = useInvitationStore((state) => state.toggleSound);
 
   useEffect(() => {
     if (!soundOn) return;
-    const ctx = new AudioContext();
-    const notes = [392, 494, 587, 659, 587, 494, 440, 392];
+    const AudioContextClass =
+      window.AudioContext ||
+      (window as unknown as { webkitAudioContext: typeof AudioContext })
+        .webkitAudioContext;
+    const ctx = new AudioContextClass();
+
+    // Raga Bhupali auspicious pentatonic melody
+    const notes = [392, 493.88, 587.33, 659.25, 587.33, 493.88, 440, 392];
+
+    // Subtle warm tanpura drone (G3)
+    const droneGain = ctx.createGain();
+    droneGain.gain.setValueAtTime(0.015, ctx.currentTime);
+    const droneOsc = ctx.createOscillator();
+    droneOsc.type = "triangle";
+    droneOsc.frequency.value = 196.0;
+    droneOsc.connect(droneGain);
+    droneGain.connect(ctx.destination);
+    droneOsc.start();
+
     let step = 0;
     const id = window.setInterval(() => {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      const time = ctx.currentTime;
-      osc.type = "sine";
-      osc.frequency.value = notes[step % notes.length];
-      gain.gain.setValueAtTime(0.0001, time);
-      gain.gain.exponentialRampToValueAtTime(0.08, time + 0.03);
-      gain.gain.exponentialRampToValueAtTime(0.0001, time + 1.1);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(time);
-      osc.stop(time + 1.2);
+      const now = ctx.currentTime;
+      const freq = notes[step % notes.length];
+
+      // Primary acoustic santoor chime
+      const osc1 = ctx.createOscillator();
+      const osc2 = ctx.createOscillator();
+      const noteGain = ctx.createGain();
+      const filter = ctx.createBiquadFilter();
+
+      filter.type = "lowpass";
+      filter.frequency.setValueAtTime(1600, now);
+      filter.frequency.exponentialRampToValueAtTime(400, now + 1.2);
+
+      osc1.type = "sine";
+      osc1.frequency.value = freq;
+
+      // Harmonic warmth
+      osc2.type = "triangle";
+      osc2.frequency.value = freq * 2;
+
+      noteGain.gain.setValueAtTime(0.0001, now);
+      noteGain.gain.exponentialRampToValueAtTime(0.05, now + 0.04);
+      noteGain.gain.exponentialRampToValueAtTime(0.0001, now + 1.3);
+
+      osc1.connect(noteGain);
+      osc2.connect(noteGain);
+      noteGain.connect(filter);
+      filter.connect(ctx.destination);
+
+      osc1.start(now);
+      osc2.start(now);
+      osc1.stop(now + 1.4);
+      osc2.stop(now + 1.4);
+
       step += 1;
-    }, 680);
+    }, 720);
+
     return () => {
       window.clearInterval(id);
+      droneOsc.stop();
       void ctx.close();
     };
   }, [soundOn]);
@@ -75,10 +113,7 @@ export function Invitation() {
   return (
     <div className="invite-stage">
       <div className="invite-card">
-        <div
-          ref={scrollerRef}
-          className={`h-full ${sealed ? "overflow-hidden" : "overflow-auto"}`}
-        >
+        <div ref={scrollerRef} className="h-full overflow-auto">
           <header className="relative flex h-full flex-col text-center text-[#f7f1ea]">
             <picture className="absolute inset-0 block h-full w-full">
               <source
@@ -100,27 +135,50 @@ export function Invitation() {
               />
             </picture>
             <div className="absolute inset-0 bg-linear-to-b from-black/25 via-black/15 to-[#141018]/70" />
+            
+            {/* Wedding Couple and Parents Section with Indian Wedding Text Animations */}
             <div className="relative z-1 flex min-h-0 flex-1 flex-col items-center justify-center px-5 pt-[clamp(2.6rem,6cqh,4rem)] pb-1 [text-shadow:0_2px_16px_rgba(0,0,0,.45)]">
-              <p className="mx-auto max-w-[min(16rem,92%)] text-[clamp(1.05rem,3.2cqh,1.8rem)] leading-snug">
+              {/* Auspicious Sacred Invocation */}
+              <p className="animate-royal-fade-in-1 mb-1 font-serif text-[clamp(0.72rem,2cqh,0.95rem)] tracking-[0.24em] text-[#fae5b6] uppercase opacity-95">
+                ॥ श्री गणेशाय नमः ॥
+              </p>
+
+              {/* Welcome text */}
+              <p className="animate-royal-fade-in-2 mx-auto max-w-[min(16rem,92%)] text-[clamp(1.05rem,3.2cqh,1.8rem)] leading-snug">
                 <Tx item={copy.welcome} script />
               </p>
-              <Rule light />
-              <h1 className="max-w-full font-display text-[clamp(1.85rem,7cqh,4.15rem)] font-medium italic leading-none">
-                Noopur
+
+              {/* Royal Rule with subtle expansion */}
+              <div className="animate-royal-expand w-full">
+                <Rule light />
+              </div>
+
+              {/* Bride: Noopur with Indian Wedding Gold Luster & fixed descender padding */}
+              <h1 className="animate-royal-fade-in-3 max-w-full font-display text-[clamp(2.1rem,7.5cqh,4.4rem)] font-medium italic leading-[1.25] tracking-wide overflow-visible py-0.5">
+                <span className="wedding-gold-shimmer">Noopur</span>
               </h1>
-              <p className="mx-auto mt-1 max-w-[24ch] text-[clamp(0.72rem,1.8cqh,1rem)] leading-snug tracking-wide">
+
+              {/* Bride's parents */}
+              <p className="animate-royal-fade-in-4 mx-auto mt-1 max-w-[24ch] text-[clamp(0.74rem,1.9cqh,1.02rem)] leading-snug tracking-wider text-[#f7f1ea]/90">
                 <Tx item={copy.noopurParents} />
               </p>
-              <p className="my-0.5 font-display text-[clamp(1.15rem,3cqh,2.25rem)] italic leading-none">
-                &amp;
+
+              {/* Ampersand with warm golden bloom */}
+              <p className="animate-royal-ampersand my-1 font-display text-[clamp(1.2rem,3.2cqh,2.4rem)] italic leading-none text-[#fae5b6]">
+                <span className="inline-block transform-gpu">&amp;</span>
               </p>
-              <h1 className="max-w-full font-display text-[clamp(1.85rem,7cqh,4.15rem)] font-medium italic leading-none">
-                Ishan
+
+              {/* Groom: Ishan with Indian Wedding Gold Luster */}
+              <h1 className="animate-royal-fade-in-5 max-w-full font-display text-[clamp(2.1rem,7.5cqh,4.4rem)] font-medium italic leading-[1.25] tracking-wide overflow-visible py-0.5">
+                <span className="wedding-gold-shimmer">Ishan</span>
               </h1>
-              <p className="mx-auto mt-1 max-w-[22ch] text-[clamp(0.72rem,1.8cqh,1rem)] leading-snug tracking-wide">
+
+              {/* Groom's parents */}
+              <p className="animate-royal-fade-in-6 mx-auto mt-1 max-w-[22ch] text-[clamp(0.74rem,1.9cqh,1.02rem)] leading-snug tracking-wider text-[#f7f1ea]/90">
                 <Tx item={copy.ishanParents} />
               </p>
             </div>
+
             <button
               type="button"
               className="relative z-1 mb-3 flex shrink-0 flex-col items-center gap-0.5 border-0 bg-transparent text-xs tracking-[0.28em] text-[#efe6dc] [text-shadow:0_2px_10px_rgba(0,0,0,.45)]"
@@ -152,6 +210,8 @@ export function Invitation() {
             <p className="mx-auto max-w-[34ch] text-[clamp(1.05rem,2.4cqh,1.25rem)] leading-relaxed">
               <Tx item={copy.blessing} />
             </p>
+            {/* Interactive Flower Petals Blessing */}
+            <PushpaVrishti />
           </section>
 
           <Panel>
@@ -175,6 +235,8 @@ export function Invitation() {
             <Heading item={copy.countdown} />
             <Rule />
             <Countdown />
+            {/* Save to Calendar Integration */}
+            <AddToCalendar />
           </Panel>
 
           <Panel>
@@ -223,20 +285,12 @@ export function Invitation() {
           </footer>
         </div>
 
-        {sealed ? (
-          <Envelope
-            opening={opening}
-            onOpen={beginOpen}
-            onFinished={finishOpen}
-          />
-        ) : null}
-
         <button
           type="button"
           aria-pressed={soundOn}
           aria-label={soundOn ? "Mute" : "Unmute"}
           onClick={toggleSound}
-          className="absolute top-[max(0.75rem,env(safe-area-inset-top))] right-3 z-8 grid h-12 w-12 place-items-center rounded-2xl border-0 bg-[#f7eef1] text-[#6d3040] shadow-[0_4px_16px_rgba(80,40,50,.12)] sm:h-14 sm:w-14"
+          className="absolute top-[max(0.75rem,env(safe-area-inset-top))] right-3 z-8 grid h-12 w-12 place-items-center rounded-2xl border-0 bg-[#f7eef1] text-[#6d3040] shadow-[0_4px_16px_rgba(80,40,50,.12)] sm:h-14 sm:w-14 cursor-pointer transition-transform hover:scale-105 active:scale-95"
         >
           {soundOn ? <Speaker /> : <Muted />}
         </button>
@@ -293,9 +347,11 @@ function Event({
     <li
       className={`relative pb-5 pl-5.5 ${last ? "border-l border-transparent pb-0" : "border-l border-[#e3c5cb]"} before:absolute before:-left-1.25 before:top-1.5 before:h-2.25 before:w-2.25 before:rounded-full before:bg-[#a33b4c]`}
     >
-      <h3 className="m-0 text-[clamp(1.25rem,4.8cqi,1.6rem)] leading-snug font-semibold text-[#7c2433]">
-        {title}
-      </h3>
+      <div className="flex flex-wrap items-baseline gap-2">
+        <h3 className="m-0 text-[clamp(1.25rem,4.8cqi,1.6rem)] leading-snug font-semibold text-[#7c2433]">
+          {title}
+        </h3>
+      </div>
       {details.map((detail) => (
         <div key={`${detail.label ?? "when"}-${detail.when}`} className="mt-1">
           {detail.label ? (

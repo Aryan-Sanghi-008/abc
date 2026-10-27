@@ -32,40 +32,8 @@
 .heart-mask {
   -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 90'><path d='M50 82C20 62 6 46 6 30 6 16 16 6 30 6c8 0 15 4 20 11C55 10 62 6 70 6c14 0 24 10 24 24 0 16-14 32-44 52z' fill='black'/></svg>")
     center / 100% 100% no-repeat;
-  mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 90'><path d='M50 82C20 62 6 46 6 30 6 16 16 6 30 6c8 0 15 4 20 11C55 10 62 6 70 6c14 0 24 10 24 24 0 16-14 32-44 52z' fill='black'/></svg>")
+  mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 90'><path d='M50 82C20 62 6 46 6 30 6c8 0 15 4 20 11C55 10 62 6 70 6c14 0 24 10 24 24 0 16-14 32-44 52z' fill='black'/></svg>")
     center / 100% 100% no-repeat;
-}
-
-.envelope-film {
-  position: absolute;
-  inset: 0;
-  z-index: 5;
-  margin: 0;
-  padding: 0;
-  border: 0;
-  background: #e7c4ce;
-  cursor: pointer;
-  overflow: hidden;
-}
-.envelope-film:disabled {
-  cursor: default;
-}
-.envelope-film img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  pointer-events: none;
-  user-select: none;
-}
-.envelope-film img.is-dissolving {
-  animation: envelope-away 0.4s ease forwards;
-}
-@keyframes envelope-away {
-  to {
-    opacity: 0;
-  }
 }
 
 .invite-stage {
@@ -81,4 +49,179 @@
   background: #f7eef1;
   container-type: size;
   container-name: card;
+}
+
+/* ========================================================
+   Indian Wedding Typography & Royal Foil Animations
+   ======================================================== */
+@keyframes royalFadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes royalExpandLine {
+  0% {
+    opacity: 0;
+    transform: scaleX(0.25);
+  }
+  100% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+@keyframes royalAmpersandIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.65);
+  }
+  60% {
+    opacity: 0.95;
+    transform: scale(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes royalGoldSweep {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+@keyframes softGoldGlow {
+  0%, 100% {
+    filter: drop-shadow(0 2px 14px rgba(0, 0, 0, 0.45)) drop-shadow(0 0 10px rgba(247, 226, 184, 0.2));
+  }
+  50% {
+    filter: drop-shadow(0 2px 16px rgba(0, 0, 0, 0.55)) drop-shadow(0 0 20px rgba(254, 235, 179, 0.45));
+  }
+}
+
+/* Embossed Royal Gold Foil Luster for Couple's Names with descender padding */
+.wedding-gold-shimmer {
+  display: inline-block;
+  padding-top: 0.06em;
+  padding-bottom: 0.25em;
+  margin-bottom: -0.25em;
+  padding-right: 0.12em;
+  padding-left: 0.04em;
+  overflow: visible;
+  line-height: 1.25;
+  background: linear-gradient(
+    110deg,
+    #ffffff 0%,
+    #fae5b6 22%,
+    #ffffff 42%,
+    #d4a753 60%,
+    #ffffff 80%,
+    #fae5b6 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: royalGoldSweep 8s linear infinite, softGoldGlow 4s ease-in-out infinite;
+}
+
+/* Fallback if background-clip: text is unsupported */
+@supports not ((-webkit-background-clip: text) or (background-clip: text)) {
+  .wedding-gold-shimmer {
+    color: #fae5b6;
+    text-shadow: 0 0 16px rgba(212, 167, 83, 0.6);
+  }
+}
+
+/* Sequential Staggered Entrance Animations */
+.animate-royal-fade-in-1 {
+  animation: royalFadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
+}
+.animate-royal-fade-in-2 {
+  animation: royalFadeInUp 1.1s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both;
+}
+.animate-royal-expand {
+  transform-origin: center;
+  animation: royalExpandLine 1s cubic-bezier(0.16, 1, 0.3, 1) 0.55s both;
+}
+.animate-royal-fade-in-3 {
+  animation: royalFadeInUp 1.25s cubic-bezier(0.16, 1, 0.3, 1) 0.75s both;
+}
+.animate-royal-fade-in-4 {
+  animation: royalFadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) 0.95s both;
+}
+.animate-royal-ampersand {
+  animation: royalAmpersandIn 1.1s cubic-bezier(0.16, 1, 0.3, 1) 1.15s both;
+}
+.animate-royal-fade-in-5 {
+  animation: royalFadeInUp 1.25s cubic-bezier(0.16, 1, 0.3, 1) 1.35s both;
+}
+.animate-royal-fade-in-6 {
+  animation: royalFadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) 1.55s both;
+}
+
+/* ========================================================
+   Pushpa Vrishti (Blessing Petal Fall 3D Physics Animations)
+   ======================================================== */
+@keyframes petalFallDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-60px);
+  }
+  8% {
+    opacity: 1;
+  }
+  88% {
+    opacity: 0.95;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(108vh);
+  }
+}
+
+@keyframes petalSway1 {
+  0% {
+    transform: translateX(0px) rotateZ(0deg) rotateX(0deg) rotateY(0deg);
+  }
+  25% {
+    transform: translateX(var(--sway, 32px)) rotateZ(55deg) rotateX(70deg) rotateY(40deg);
+  }
+  50% {
+    transform: translateX(0px) rotateZ(120deg) rotateX(140deg) rotateY(80deg);
+  }
+  75% {
+    transform: translateX(calc(-1 * var(--sway, 32px))) rotateZ(210deg) rotateX(240deg) rotateY(140deg);
+  }
+  100% {
+    transform: translateX(0px) rotateZ(360deg) rotateX(360deg) rotateY(180deg);
+  }
+}
+
+@keyframes petalSway2 {
+  0% {
+    transform: translateX(0px) rotateZ(0deg) rotateX(0deg) rotateY(0deg);
+  }
+  25% {
+    transform: translateX(calc(-1 * var(--sway, 28px))) rotateZ(-45deg) rotateX(-60deg) rotateY(50deg);
+  }
+  50% {
+    transform: translateX(0px) rotateZ(-130deg) rotateX(-150deg) rotateY(100deg);
+  }
+  75% {
+    transform: translateX(var(--sway, 28px)) rotateZ(-220deg) rotateX(-260deg) rotateY(160deg);
+  }
+  100% {
+    transform: translateX(0px) rotateZ(-360deg) rotateX(-360deg) rotateY(-180deg);
+  }
 }
