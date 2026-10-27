@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { copy } from "@/lib/copy";
 import { useInvitationStore } from "@/store/useInvitationStore";
 import { Tx } from "./Tx";
@@ -22,18 +22,15 @@ function heartPath(ctx: CanvasRenderingContext2D, w: number, h: number) {
 export function ScratchHeart() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const solidAtStart = useRef(1);
-  const revealed = useInvitationStore((state) => state.revealed);
-  const reveal = useInvitationStore((state) => state.reveal);
+  const isDragging = useRef(false);
+  const [revealed, setRevealed] = useState(false);
+  const storeReveal = useInvitationStore((state) => state.reveal);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas || revealed) return;
     const ctx = canvas.getContext("2d", { willReadFrequently: true });
     if (!ctx) return;
-
-    let isDrawing = false;
-    let lastX = 0;
-    let lastY = 0;
 
     const paint = () => {
       const rect = canvas.getBoundingClientRect();
@@ -73,66 +70,39 @@ export function ScratchHeart() {
       solidAtStart.current = Math.max(1, countSolid(ctx, canvas));
     };
 
-    const scratchAt = (clientX: number, clientY: number) => {
+    const scratchAt = (x: number, y: number) => {
       const rect = canvas.getBoundingClientRect();
-      const cx = clientX - rect.left;
-      const cy = clientY - rect.top;
       ctx.save();
       ctx.globalCompositeOperation = "destination-out";
       ctx.beginPath();
-      ctx.arc(cx, cy, 24, 0, Math.PI * 2);
+      ctx.arc(x - rect.left, y - rect.top, 20, 0, Math.PI * 2);
       ctx.fill();
       ctx.restore();
     };
 
-    const scratchLine = (x1: number, y1: number, x2: number, y2: number) => {
-      ctx.save();
-      ctx.globalCompositeOperation = "destination-out";
-      ctx.lineWidth = 44;
-      ctx.lineCap = "round";
-      ctx.lineJoin = "round";
-      ctx.beginPath();
-      ctx.moveTo(x1, y1);
-      ctx.lineTo(x2, y2);
-      ctx.stroke();
-      ctx.restore();
-    };
-
     const onDown = (event: PointerEvent) => {
-      isDrawing = true;
+      isDragging.current = true;
       try {
         canvas.setPointerCapture(event.pointerId);
       } catch {}
-      const rect = canvas.getBoundingClientRect();
-      lastX = event.clientX - rect.left;
-      lastY = event.clientY - rect.top;
       scratchAt(event.clientX, event.clientY);
     };
 
     const onMove = (event: PointerEvent) => {
-      if (!isDrawing && event.buttons !== 1) return;
-      const rect = canvas.getBoundingClientRect();
-      const currentX = event.clientX - rect.left;
-      const currentY = event.clientY - rect.top;
-      scratchLine(lastX, lastY, currentX, currentY);
-      lastX = currentX;
-      lastY = currentY;
-
-      const solid = countSolid(ctx, canvas);
-      if (solid / solidAtStart.current < 0.68) {
-        reveal();
-      }
+      if (!isDragging.current && event.buttons !== 1) return;
+      scratchAt(event.clientX, event.clientY);
     };
 
     const onUp = (event: PointerEvent) => {
-      if (!isDrawing) return;
-      isDrawing = false;
+      if (!isDragging.current) return;
+      isDragging.current = false;
       try {
         canvas.releasePointerCapture(event.pointerId);
       } catch {}
       const solid = countSolid(ctx, canvas);
-      if (solid / solidAtStart.current < 0.72) {
-        reveal();
+      if (solid / solidAtStart.current < 0.6) {
+        setRevealed(true);
+        storeReveal();
       }
     };
 
@@ -150,24 +120,71 @@ export function ScratchHeart() {
       canvas.removeEventListener("pointercancel", onUp);
       window.removeEventListener("resize", paint);
     };
-  }, [reveal, revealed]);
+  }, [revealed, storeReveal]);
 
   return (
     <div className="relative mx-auto mt-2 aspect-10/9 w-[min(340px,86%)]">
-      <div className="absolute inset-0 flex flex-col items-center justify-center select-none">
-        <p className="-mt-2 w-[72%] text-center text-[clamp(15px,3.8cqi,18px)] leading-snug text-[#7c2433]">
-          <Tx item={copy.invited} />
-          <strong className="mt-1.5 block text-[clamp(17px,4.6cqi,22px)] font-bold leading-tight text-[#7c2433]">
+      {/* Heart-Shaped UI Enclosing the Dates (Behind Canvas) */}
+      <div className="pointer-events-none absolute inset-0 z-0 flex flex-col items-center justify-center select-none">
+        {/* Heart shaped card with outer stroke and soft inner dashed outline */}
+        <svg
+          viewBox="0 0 100 90"
+          className="absolute inset-0 h-full w-full drop-shadow-[0_4px_16px_rgba(141,61,78,0.1)]"
+          aria-hidden="true"
+        >
+          <defs>
+            <linearGradient id="heartBgGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#ffffff" />
+              <stop offset="100%" stopColor="#fdf3f5" />
+            </linearGradient>
+          </defs>
+
+          {/* Main Heart Shape Body */}
+          <path
+            d="M50 82C20 62 6 46 6 30 6 16 16 6 30 6c8 0 15 4 20 11C55 10 62 6 70 6c14 0 24 10 24 24 0 16-14 32-44 52z"
+            fill="url(#heartBgGrad)"
+            stroke="#d57689"
+            strokeWidth="1.5"
+          />
+
+          {/* Decorative Inner Stitched Heart */}
+          <path
+            d="M50 77C24 60 11 46 11 32 11 20 18 11 30 11c7 0 13 3 17 9 1 1 5 1 6 0 4-6 10-9 17-9 12 0 19 9 19 21 0 14-13 28-39 45z"
+            fill="none"
+            stroke="#eab2bc"
+            strokeWidth="0.8"
+            strokeDasharray="2.5 2.5"
+            opacity="0.75"
+          />
+        </svg>
+
+        {/* Dates Enclosed Inside the Heart */}
+        <div className="pointer-events-none relative z-0 flex flex-col items-center justify-center text-center px-4 -mt-2.5 w-[76%]">
+          <p className="font-serif text-[clamp(13px,3.8cqi,16px)] font-medium text-[#8d3d4e] tracking-wide mb-0.5">
+            <Tx item={copy.invited} />
+          </p>
+
+          <div className="my-1 flex items-center justify-center gap-1.5 text-[#c98b96]">
+            <span className="h-px w-6 bg-current opacity-60" />
+            <i className="text-[9px] not-italic text-[#8d3d4e]">♥</i>
+            <span className="h-px w-6 bg-current opacity-60" />
+          </div>
+
+          <strong className="block font-serif text-[clamp(17px,4.8cqi,22px)] font-bold text-[#7c2433] leading-snug">
             {copy.datesFirst}
-            <br />
-            {copy.datesSecond}
           </strong>
-        </p>
+
+          <span className="block font-serif text-[clamp(15px,4.2cqi,19px)] font-semibold text-[#8d3d4e] leading-snug">
+            {copy.datesSecond}
+          </span>
+        </div>
       </div>
+
+      {/* Original Scratch Canvas Sitting on Top */}
       <canvas
         ref={canvasRef}
         aria-label="Scratch the heart"
-        className={`absolute inset-0 h-full w-full touch-none ${
+        className={`absolute inset-0 z-10 h-full w-full touch-none ${
           revealed
             ? "pointer-events-none opacity-0 transition-opacity duration-700"
             : "cursor-crosshair"

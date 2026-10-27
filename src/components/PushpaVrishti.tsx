@@ -72,7 +72,7 @@ export function PushpaVrishti() {
         <button
           type="button"
           onClick={showerBlessings}
-          className="group relative inline-flex items-center gap-2.5 rounded-full border border-[#d49a75]/50 bg-linear-to-b from-[#ffffff] via-[#fffbf7] to-[#fbf1ed] px-5 py-2.5 text-sm font-medium text-[#7c2433] shadow-[0_4px_18px_rgba(141,61,78,0.14)] transition-all hover:scale-105 hover:border-[#d49a75] active:scale-95 cursor-pointer"
+          className="group relative inline-flex items-center gap-2.5 rounded-full border border-[#d49a75]/60 bg-linear-to-b from-[#ffffff] via-[#fffbf7] to-[#fbf1ed] pl-4.5 pr-1.5 py-1.5 text-sm font-medium text-[#7c2433] shadow-[0_4px_18px_rgba(141,61,78,0.14)] transition-all hover:scale-105 hover:border-[#d49a75] active:scale-95 cursor-pointer"
           aria-label="Shower flower petals as blessing"
         >
           <span
@@ -84,9 +84,15 @@ export function PushpaVrishti() {
           </span>
           <span className="font-serif tracking-wide text-[14px]">
             Shower Blessings{" "}
-            <span className="opacity-75 text-xs text-[#a34b5c] font-serif">
+            <span className="hidden sm:inline opacity-75 text-xs text-[#a34b5c] font-serif">
               ॥ पुष्पवृष्टि ॥
             </span>
+          </span>
+
+          {/* Eye-catching CTA click button on the right */}
+          <span className="relative inline-flex items-center gap-1 rounded-full bg-linear-to-r from-[#8d2c3c] to-[#a83246] px-3.5 py-1.5 text-xs font-sans font-semibold text-white shadow-[0_2px_10px_rgba(141,44,60,0.32)] transition-transform group-hover:scale-105 active:scale-95">
+            <span>Tap</span>
+            <span className="inline-block animate-bounce text-sm leading-none">👆</span>
           </span>
         </button>
       </div>
