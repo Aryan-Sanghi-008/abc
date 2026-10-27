@@ -81,14 +81,20 @@ export function Invitation() {
         >
           <header className="relative flex h-full flex-col text-center text-[#f7f1ea]">
             <picture className="absolute inset-0 block h-full w-full">
-              <source media="(min-width: 1100px)" srcSet="/images/hero-desktop.png" />
+              <source
+                media="(min-width: 1100px)"
+                srcSet="/images/wedding-udaipur-desktop.png"
+              />
               <source
                 media="(min-width: 700px) and (orientation: landscape)"
-                srcSet="/images/hero-desktop.png"
+                srcSet="/images/wedding-udaipur-desktop.png"
               />
-              <source media="(min-width: 700px)" srcSet="/images/hero-tablet.png" />
+              <source
+                media="(min-width: 700px)"
+                srcSet="/images/wedding-udaipur-tablet.png"
+              />
               <img
-                src="/images/hero-phone.png"
+                src="/images/wedding-udaipur-phone.PNG"
                 alt=""
                 className="h-full w-full object-cover object-center"
               />
