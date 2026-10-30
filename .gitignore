@@ -9,3 +9,6 @@ next-env.d.ts
 *.tsbuildinfo
 .DS_Store
 *.mov
+.env.local
+.env.example
+rsvp-submissions.json

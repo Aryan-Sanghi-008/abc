@@ -19,6 +19,7 @@ export const copy = {
   venueName: "The Celestial Garden (Near SKK Blu Hotel)",
   venuePlace: "Pratap Nagar, Udaipur",
   maps: "View on Google Maps",
+  rsvp: "RSVP",
   closing: "We look forward to celebrating love, laughter and new beginnings with you!",
 } as const;
 

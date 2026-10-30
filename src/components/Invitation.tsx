@@ -6,11 +6,15 @@ import { useInvitationStore } from "@/store/useInvitationStore";
 import { AddToCalendar } from "./AddToCalendar";
 import { Countdown } from "./Countdown";
 import { PushpaVrishti } from "./PushpaVrishti";
+import { RoyalRSVP } from "./RoyalRSVP";
 import { ScratchHeart } from "./ScratchHeart";
 import { Tx } from "./Tx";
 
 const MAPS =
   "https://www.google.com/maps/search/?api=1&query=SKK+Blu+Hotel+Udaipur";
+
+// Module-level audio — survives React re-renders.
+let sharedAudio: HTMLAudioElement | null = null;
 
 const program = [
   {
@@ -43,71 +47,25 @@ export function Invitation() {
   const soundOn = useInvitationStore((state) => state.soundOn);
   const toggleSound = useInvitationStore((state) => state.toggleSound);
 
+  // Audio is unlocked by the gate tap — soundOn is true when the gate fires initAudio().
+  // At that point the browser has already seen a user gesture, so play() with sound works.
   useEffect(() => {
-    if (!soundOn) return;
-    const AudioContextClass =
-      window.AudioContext ||
-      (window as unknown as { webkitAudioContext: typeof AudioContext })
-        .webkitAudioContext;
-    const ctx = new AudioContextClass();
+    if (!sharedAudio) {
+      const a = new Audio("/audio/train-hey-soul-sister.mp3");
+      a.loop = true;
+      a.volume = 0.20;
+      a.preload = "auto";
+      document.body.appendChild(a);
+      sharedAudio = a;
+    }
+    const audio = sharedAudio!;
 
-    // Raga Bhupali auspicious pentatonic melody
-    const notes = [392, 493.88, 587.33, 659.25, 587.33, 493.88, 440, 392];
-
-    // Subtle warm tanpura drone (G3)
-    const droneGain = ctx.createGain();
-    droneGain.gain.setValueAtTime(0.015, ctx.currentTime);
-    const droneOsc = ctx.createOscillator();
-    droneOsc.type = "triangle";
-    droneOsc.frequency.value = 196.0;
-    droneOsc.connect(droneGain);
-    droneGain.connect(ctx.destination);
-    droneOsc.start();
-
-    let step = 0;
-    const id = window.setInterval(() => {
-      const now = ctx.currentTime;
-      const freq = notes[step % notes.length];
-
-      // Primary acoustic santoor chime
-      const osc1 = ctx.createOscillator();
-      const osc2 = ctx.createOscillator();
-      const noteGain = ctx.createGain();
-      const filter = ctx.createBiquadFilter();
-
-      filter.type = "lowpass";
-      filter.frequency.setValueAtTime(1600, now);
-      filter.frequency.exponentialRampToValueAtTime(400, now + 1.2);
-
-      osc1.type = "sine";
-      osc1.frequency.value = freq;
-
-      // Harmonic warmth
-      osc2.type = "triangle";
-      osc2.frequency.value = freq * 2;
-
-      noteGain.gain.setValueAtTime(0.0001, now);
-      noteGain.gain.exponentialRampToValueAtTime(0.05, now + 0.04);
-      noteGain.gain.exponentialRampToValueAtTime(0.0001, now + 1.3);
-
-      osc1.connect(noteGain);
-      osc2.connect(noteGain);
-      noteGain.connect(filter);
-      filter.connect(ctx.destination);
-
-      osc1.start(now);
-      osc2.start(now);
-      osc1.stop(now + 1.4);
-      osc2.stop(now + 1.4);
-
-      step += 1;
-    }, 720);
-
-    return () => {
-      window.clearInterval(id);
-      droneOsc.stop();
-      void ctx.close();
-    };
+    if (soundOn) {
+      // The gate tap was a real user gesture — play() will succeed without muted tricks.
+      audio.play().catch(() => {});
+    } else {
+      audio.pause();
+    }
   }, [soundOn]);
 
   return (
@@ -276,6 +234,13 @@ export function Invitation() {
             >
               <Tx item={copy.maps} />
             </a>
+          </Panel>
+
+          {/* Imperial RSVP Section */}
+          <Panel>
+            <Heading item={copy.rsvp} />
+            <Rule />
+            <RoyalRSVP />
           </Panel>
 
           <footer className="bg-[#f7eef1] px-6 pt-2 pb-12 text-center sm:px-8">

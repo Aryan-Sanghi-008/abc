@@ -33,7 +33,7 @@ const nunito = Nunito({
 });
 
 export const metadata: Metadata = {
-  title: "Ishan & Noopur",
+  title: "Noopur & Ishan",
   description: "Wedding invitation for Ishan and Noopur",
 };
 
