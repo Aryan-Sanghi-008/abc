@@ -1,7 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { playWeddingMusic } from "@/lib/weddingAudio";
+import {
+  prepareWeddingMusic,
+  playWeddingMusic,
+} from "@/lib/weddingAudio";
 import { useInvitationStore } from "@/store/useInvitationStore";
 
 type Phase = "tap" | "playing" | "fading";
@@ -17,7 +20,13 @@ export function GateOpening({ onReveal, onComplete }: GateOpeningProps) {
   const [phase, setPhase] = useState<Phase>("tap");
   const videoRef = useRef<HTMLVideoElement>(null);
   const revealed = useRef(false);
+  const opening = useRef(false);
   const initAudio = useInvitationStore((s) => s.initAudio);
+
+  // Buffer the track before the tap so mobile play() can succeed in-gesture.
+  useEffect(() => {
+    prepareWeddingMusic();
+  }, []);
 
   const revealInvite = useCallback(() => {
     if (revealed.current) return;
@@ -25,22 +34,34 @@ export function GateOpening({ onReveal, onComplete }: GateOpeningProps) {
     onReveal();
   }, [onReveal]);
 
-  const handleTap = useCallback(() => {
-    if (phase !== "tap") return;
+  const handleTap = useCallback(
+    (event: React.MouseEvent | React.PointerEvent) => {
+      // Ignore non-primary / ghost events; mobile needs a real click/pointerup gesture.
+      if ("button" in event && event.button !== 0) return;
+      if (opening.current || phase !== "tap") return;
+      opening.current = true;
 
-    // Start music immediately on the user gesture — do not wait for the video to end.
-    initAudio();
-    playWeddingMusic();
+      // Music FIRST, still inside the user-gesture stack — required on iOS/Android.
+      // Do not call setState before play(), or Safari may drop the gesture.
+      initAudio();
+      void playWeddingMusic();
 
-    setPhase("playing");
-    const video = videoRef.current;
-    if (video) {
-      video.play().catch(() => {
-        revealInvite();
-        setPhase("fading");
-      });
-    }
-  }, [phase, initAudio, revealInvite]);
+      setPhase("playing");
+      const video = videoRef.current;
+      if (video) {
+        // iOS often pauses other audio when a video starts — resume music after.
+        const resumeMusic = () => {
+          void playWeddingMusic();
+        };
+        video.addEventListener("playing", resumeMusic, { once: true });
+        video.play().then(resumeMusic).catch(() => {
+          revealInvite();
+          setPhase("fading");
+        });
+      }
+    },
+    [phase, initAudio, revealInvite],
+  );
 
   const handleVideoEnd = useCallback(() => {
     revealInvite();
@@ -56,8 +77,16 @@ export function GateOpening({ onReveal, onComplete }: GateOpeningProps) {
   return (
     <div
       className="gate-root"
+      role="button"
+      tabIndex={0}
+      aria-label="Tap to open invitation"
       onClick={handleTap}
-      onTouchStart={handleTap}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          handleTap(event as unknown as React.MouseEvent);
+        }
+      }}
       style={{
         position: "fixed",
         inset: 0,
@@ -71,6 +100,8 @@ export function GateOpening({ onReveal, onComplete }: GateOpeningProps) {
         opacity: phase === "fading" ? 0 : 1,
         transition: "opacity 0.9s ease",
         pointerEvents: phase === "fading" ? "none" : "auto",
+        touchAction: "manipulation",
+        WebkitTapHighlightColor: "transparent",
       }}
     >
       <div
