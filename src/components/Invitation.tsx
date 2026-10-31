@@ -8,13 +8,11 @@ import { Countdown } from "./Countdown";
 import { PushpaVrishti } from "./PushpaVrishti";
 import { RoyalRSVP } from "./RoyalRSVP";
 import { ScratchHeart } from "./ScratchHeart";
+import { setWeddingMusicPlaying } from "@/lib/weddingAudio";
 import { Tx } from "./Tx";
 
 const MAPS =
   "https://www.google.com/maps/search/?api=1&query=SKK+Blu+Hotel+Udaipur";
-
-// Module-level audio — survives React re-renders.
-let sharedAudio: HTMLAudioElement | null = null;
 
 const program = [
   {
@@ -47,29 +45,13 @@ export function Invitation() {
   const soundOn = useInvitationStore((state) => state.soundOn);
   const toggleSound = useInvitationStore((state) => state.toggleSound);
 
-  // Audio is unlocked by the gate tap — soundOn is true when the gate fires initAudio().
-  // At that point the browser has already seen a user gesture, so play() with sound works.
+  // Gate starts music on tap; mute / unmute here keeps the same shared player.
   useEffect(() => {
-    if (!sharedAudio) {
-      const a = new Audio("/audio/train-hey-soul-sister.mp3");
-      a.loop = true;
-      a.volume = 0.20;
-      a.preload = "auto";
-      document.body.appendChild(a);
-      sharedAudio = a;
-    }
-    const audio = sharedAudio!;
-
-    if (soundOn) {
-      // The gate tap was a real user gesture — play() will succeed without muted tricks.
-      audio.play().catch(() => {});
-    } else {
-      audio.pause();
-    }
+    setWeddingMusicPlaying(soundOn);
   }, [soundOn]);
 
   return (
-    <div className="invite-stage">
+    <div className="invite-stage animate-invite-enter">
       <div className="invite-card">
         <div ref={scrollerRef} className="h-full overflow-auto">
           <header className="relative flex h-full flex-col text-center text-[#f7f1ea]">

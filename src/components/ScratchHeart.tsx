@@ -159,8 +159,8 @@ export function ScratchHeart() {
         </svg>
 
         {/* Dates Enclosed Inside the Heart */}
-        <div className="pointer-events-none relative z-0 flex flex-col items-center justify-center text-center px-4 -mt-2.5 w-[76%]">
-          <p className="font-serif text-[clamp(13px,3.8cqi,16px)] font-medium text-[#8d3d4e] tracking-wide mb-0.5">
+        <div className="pointer-events-none relative z-0 -mt-2.5 flex w-[72%] flex-col items-center justify-center px-3 text-center">
+          <p className="mb-0.5 font-serif text-[clamp(13px,3.8cqi,16px)] font-medium tracking-wide text-[#8d3d4e]">
             <Tx item={copy.invited} />
           </p>
 
@@ -170,12 +170,11 @@ export function ScratchHeart() {
             <span className="h-px w-6 bg-current opacity-60" />
           </div>
 
-          <strong className="block font-serif text-[clamp(17px,4.8cqi,22px)] font-bold text-[#7c2433] leading-snug">
-            {copy.datesFirst}
+          <strong className="block font-serif text-[clamp(17px,4.8cqi,22px)] font-bold leading-snug text-[#7c2433]">
+            {copy.datesLine1}
           </strong>
-
-          <span className="block font-serif text-[clamp(15px,4.2cqi,19px)] font-semibold text-[#8d3d4e] leading-snug">
-            {copy.datesSecond}
+          <span className="mt-0.5 block font-serif text-[clamp(15px,4.2cqi,19px)] font-semibold leading-snug text-[#8d3d4e]">
+            {copy.datesLine2}
           </span>
         </div>
       </div>

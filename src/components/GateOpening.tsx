@@ -1,43 +1,56 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { playWeddingMusic } from "@/lib/weddingAudio";
 import { useInvitationStore } from "@/store/useInvitationStore";
 
-type Phase = "tap" | "playing" | "done";
+type Phase = "tap" | "playing" | "fading";
 
 interface GateOpeningProps {
+  /** Mount the invitation under the gate (start of fade). */
+  onReveal: () => void;
+  /** Remove the gate after the fade finishes. */
   onComplete: () => void;
 }
 
-export function GateOpening({ onComplete }: GateOpeningProps) {
+export function GateOpening({ onReveal, onComplete }: GateOpeningProps) {
   const [phase, setPhase] = useState<Phase>("tap");
   const videoRef = useRef<HTMLVideoElement>(null);
+  const revealed = useRef(false);
   const initAudio = useInvitationStore((s) => s.initAudio);
+
+  const revealInvite = useCallback(() => {
+    if (revealed.current) return;
+    revealed.current = true;
+    onReveal();
+  }, [onReveal]);
 
   const handleTap = useCallback(() => {
     if (phase !== "tap") return;
 
-    // The tap is a real user gesture — unlock audio in store (starts music).
+    // Start music immediately on the user gesture — do not wait for the video to end.
     initAudio();
+    playWeddingMusic();
 
     setPhase("playing");
     const video = videoRef.current;
     if (video) {
       video.play().catch(() => {
-        // Video failed — go straight to invite.
-        setPhase("done");
-        onComplete();
+        revealInvite();
+        setPhase("fading");
       });
     }
-  }, [phase, initAudio, onComplete]);
+  }, [phase, initAudio, revealInvite]);
 
   const handleVideoEnd = useCallback(() => {
-    setPhase("done");
-    onComplete();
-  }, [onComplete]);
+    revealInvite();
+    setPhase("fading");
+  }, [revealInvite]);
 
   useEffect(() => {
-    if (phase === "done") onComplete();
+    if (phase !== "fading") return;
+    const id = window.setTimeout(onComplete, 900);
+    return () => window.clearTimeout(id);
   }, [phase, onComplete]);
 
   return (
@@ -49,16 +62,17 @@ export function GateOpening({ onComplete }: GateOpeningProps) {
         position: "fixed",
         inset: 0,
         zIndex: 9999,
-        // Light peach / baby-pink background
         background: "#fdf0f3",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         overflow: "hidden",
         cursor: phase === "tap" ? "pointer" : "default",
+        opacity: phase === "fading" ? 0 : 1,
+        transition: "opacity 0.9s ease",
+        pointerEvents: phase === "fading" ? "none" : "auto",
       }}
     >
-      {/* Soft radial gradient wash */}
       <div
         aria-hidden="true"
         style={{
@@ -70,7 +84,6 @@ export function GateOpening({ onComplete }: GateOpeningProps) {
         }}
       />
 
-      {/* Subtle floral / lattice pattern overlay */}
       <svg
         aria-hidden="true"
         viewBox="0 0 900 600"
@@ -86,18 +99,15 @@ export function GateOpening({ onComplete }: GateOpeningProps) {
       >
         <rect x="36" y="36" width="828" height="528" rx="6" fill="none" stroke="#c9a96e" strokeWidth="1" />
         <rect x="56" y="56" width="788" height="488" rx="3" fill="none" stroke="#c9a96e" strokeWidth="0.5" />
-        {/* Corner ornaments */}
         <path d="M36 100 Q60 80 80 60" fill="none" stroke="#c9a96e" strokeWidth="0.8" />
         <path d="M864 100 Q840 80 820 60" fill="none" stroke="#c9a96e" strokeWidth="0.8" />
         <path d="M36 500 Q60 520 80 540" fill="none" stroke="#c9a96e" strokeWidth="0.8" />
         <path d="M864 500 Q840 520 820 540" fill="none" stroke="#c9a96e" strokeWidth="0.8" />
-        {/* Centre divider */}
         <line x1="60" y1="300" x2="870" y2="300" stroke="#c9a96e" strokeWidth="0.35" strokeDasharray="4 6" />
         <circle cx="450" cy="300" r="10" fill="none" stroke="#c9a96e" strokeWidth="0.8" />
         <circle cx="450" cy="300" r="3.5" fill="#c9a96e" opacity="0.5" />
       </svg>
 
-      {/* ─── Video (portrait phone ratio, centred / pillar-boxed on desktop) ─── */}
       <video
         ref={videoRef}
         src="/media/our-wedding-card-opening.mp4"
@@ -112,11 +122,10 @@ export function GateOpening({ onComplete }: GateOpeningProps) {
           maxWidth: "480px",
           height: "100%",
           objectFit: "cover",
-          display: phase === "playing" || phase === "done" ? "block" : "none",
+          display: phase === "tap" ? "none" : "block",
         }}
       />
 
-      {/* ─── "Tap to Open" frosted card ─── */}
       {phase === "tap" && (
         <div
           style={{
@@ -129,7 +138,6 @@ export function GateOpening({ onComplete }: GateOpeningProps) {
             gap: "1.4rem",
             padding: "2.2rem 2.4rem",
             textAlign: "center",
-            // Frosted peach card
             background: "rgba(253, 240, 243, 0.60)",
             backdropFilter: "blur(18px)",
             WebkitBackdropFilter: "blur(18px)",
@@ -140,7 +148,6 @@ export function GateOpening({ onComplete }: GateOpeningProps) {
             maxWidth: "min(90vw, 380px)",
           }}
         >
-          {/* Infinity / floral motif */}
           <svg viewBox="0 0 80 36" width="72" aria-hidden="true">
             <path
               d="M40 18 C40 8 54 2 62 10 C70 18 62 30 52 26 C44 22 40 18 40 18 C40 18 36 14 28 10 C18 6 10 18 18 26 C26 34 40 28 40 18Z"
@@ -151,7 +158,6 @@ export function GateOpening({ onComplete }: GateOpeningProps) {
             <circle cx="40" cy="18" r="2" fill="#c9a96e" />
           </svg>
 
-          {/* Sanskrit invocation */}
           <p
             style={{
               fontFamily: "var(--font-display, Georgia, serif)",
@@ -165,7 +171,6 @@ export function GateOpening({ onComplete }: GateOpeningProps) {
             ॥ श्री गणेशाय नमः ॥
           </p>
 
-          {/* Couple names */}
           <p
             style={{
               fontFamily: "var(--font-display, Georgia, serif)",
@@ -193,7 +198,6 @@ export function GateOpening({ onComplete }: GateOpeningProps) {
             request the honour of your presence
           </p>
 
-          {/* Thin rule */}
           <div
             style={{
               width: "60%",
@@ -203,7 +207,6 @@ export function GateOpening({ onComplete }: GateOpeningProps) {
             }}
           />
 
-          {/* Pulsing CTA */}
           <div
             style={{
               display: "flex",
@@ -254,7 +257,6 @@ export function GateOpening({ onComplete }: GateOpeningProps) {
         </div>
       )}
 
-      {/* Keyframe animations */}
       <style>{`
         @keyframes gate-pulse {
           0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(179,107,122,0.3); }
@@ -264,4 +266,3 @@ export function GateOpening({ onComplete }: GateOpeningProps) {
     </div>
   );
 }
-

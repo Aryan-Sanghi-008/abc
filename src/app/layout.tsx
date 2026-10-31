@@ -9,14 +9,14 @@ import "./globals.css";
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
-  weight: ["500", "600"],
+  weight: "600",
   variable: "--font-cormorant",
 });
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
-  weight: ["500", "600"],
-  style: ["normal", "italic"],
+  weight: "600",
+  style: "italic",
   variable: "--font-playfair",
 });
 
@@ -28,7 +28,7 @@ const vibes = Great_Vibes({
 
 const nunito = Nunito({
   subsets: ["latin"],
-  weight: ["400", "600"],
+  weight: "400",
   variable: "--font-nunito",
 });
 

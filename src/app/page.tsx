@@ -7,30 +7,37 @@ import { Invitation } from "@/components/Invitation";
 const SESSION_KEY = "wedding_gate_opened";
 
 export default function Page() {
-  // null = still checking sessionStorage (avoid flash), true/false = decided
-  const [showInvite, setShowInvite] = useState<boolean | null>(null);
+  // null = still reading sessionStorage
+  const [ready, setReady] = useState(false);
+  const [showInvite, setShowInvite] = useState(false);
+  const [showGate, setShowGate] = useState(true);
 
   useEffect(() => {
-    // sessionStorage lives only for the current tab session.
-    // A page refresh keeps the value; opening a new tab starts fresh.
     const alreadyOpened = sessionStorage.getItem(SESSION_KEY) === "1";
-    setShowInvite(alreadyOpened);
+    if (alreadyOpened) {
+      setShowInvite(true);
+      setShowGate(false);
+    }
+    setReady(true);
   }, []);
 
-  const handleGateComplete = () => {
+  const handleReveal = () => {
     sessionStorage.setItem(SESSION_KEY, "1");
     setShowInvite(true);
   };
 
-  // Avoid rendering anything until we know which screen to show (prevents flash).
-  if (showInvite === null) return null;
+  const handleGateComplete = () => {
+    setShowGate(false);
+  };
+
+  if (!ready) return null;
 
   return (
     <>
-      {!showInvite && <GateOpening onComplete={handleGateComplete} />}
-      {/* Only mount Invitation after gate completes so entry animations
-          (animate-royal-fade-in-*, etc.) fire fresh when they become visible. */}
-      {showInvite && <Invitation />}
+      {showInvite ? <Invitation /> : null}
+      {showGate ? (
+        <GateOpening onReveal={handleReveal} onComplete={handleGateComplete} />
+      ) : null}
     </>
   );
 }
